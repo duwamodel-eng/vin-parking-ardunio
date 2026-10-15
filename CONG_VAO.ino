@@ -253,16 +253,66 @@ void loop() {
   lcd.setCursor(0, 0);
   lcd.print("DANG XAC THUC");
 
-  String result = readPiCommand(35000);
+
+String result = readPiCommand(35000);
+
+if (result == "RESULT,REGISTERED") {
+  // Chế độ đăng ký RFID: không mở barrier.
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("DA NHAN UID");
+  lcd.setCursor(0, 1);
+  lcd.print("DANG KY RFID");
+  beep(1);
+  delay(1500);
+
+} else if (result == "RESULT,CARD_VALID") {
+  // Thẻ hợp lệ: chờ quyết định xác thực khuôn mặt.
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("THE HOP LE");
+  lcd.setCursor(0, 1);
+  lcd.print("CHO KHUON MAT");
+
+  // Đọc kết quả thứ hai từ Raspberry Pi.
+  result = readPiCommand(35000);
 
   if (result == "RESULT,ENTRY_ALLOWED") {
     openBarrier();
+  } else if (result == "RESULT,FACE_DENIED") {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("KHUON MAT SAI");
+    lcd.setCursor(0, 1);
+    lcd.print("TU CHOI!");
+    beep(3, 100);
+    delay(2000);
+  } else if (result == "RESULT,FACE_TIMEOUT") {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("HET THOI GIAN");
+    lcd.setCursor(0, 1);
+    lcd.print("QUET LAI THE");
+    beep(2, 100);
+    delay(2000);
   } else {
+    // Không nhận được kết quả hợp lệ: đóng cổng.
     rejectCard();
   }
 
-  rfid.PICC_HaltA();
-  rfid.PCD_StopCrypto1();
+} else {
+  // Thẻ sai, lỗi giao tiếp hoặc hết thời gian: đóng cổng.
+  rejectCard();
+}
 
-  delay(500);
+lcd.clear();
+lcd.setCursor(0, 0);
+lcd.print("VIN PARKING");
+lcd.setCursor(0, 1);
+lcd.print("QUET THE RFID");
+
+rfid.PICC_HaltA();
+rfid.PCD_StopCrypto1();
+delay(500);
+
 }
