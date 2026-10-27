@@ -90,7 +90,7 @@ void openBarrier() {
   beep(1);
 
   // Mở từ từ
-  for (int angle = 0; angle <= 90; angle += 3) {
+  for (int angle = 90; angle >= 0; angle -= 3) {
     barrier.write(angle);
     delay(20);
   }
@@ -103,7 +103,7 @@ void openBarrier() {
   lcd.print("DANG DONG");
 
   // Đóng từ từ
-  for (int angle = 90; angle >= 0; angle -= 3) {
+  for (int angle = 0; angle <= 90; angle += 3) {
     barrier.write(angle);
     delay(20);
   }
@@ -193,7 +193,7 @@ void setup() {
 
   // Servo
   barrier.attach(SERVO_PIN);
-  barrier.write(0);
+  barrier.write(90);
 
   // Buzzer
   pinMode(BUZZER_PIN, OUTPUT);
@@ -276,17 +276,22 @@ if (result == "RESULT,REGISTERED") {
 
   // Đọc kết quả thứ hai từ Raspberry Pi.
   result = readPiCommand(35000);
+  Serial.printf("[PI RESULT 2] '%s' at %lu ms\n",
+              result.c_str(), millis());
 
   if (result == "RESULT,ENTRY_ALLOWED") {
     openBarrier();
   } else if (result == "RESULT,FACE_DENIED") {
+    Serial.println("[LCD] Display FACE_DENIED");
+
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("KHUON MAT SAI");
     lcd.setCursor(0, 1);
     lcd.print("TU CHOI!");
+
     beep(3, 100);
-    delay(2000);
+    delay(3000);
   } else if (result == "RESULT,FACE_TIMEOUT") {
     lcd.clear();
     lcd.setCursor(0, 0);
