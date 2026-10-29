@@ -153,9 +153,14 @@ String readPiCommand(unsigned long timeoutMs = 35000) {
       char c = Serial.read();
 
       if (c == '\n') {
-        line.trim();
-        return line;
-      }
+          line.trim();
+
+          if (line == "RESULT,QUEUED") {
+              line = "";
+              continue;
+          }
+          return line;
+      }      
 
       if (c != '\r' && line.length() < 100) {
         line += c;
@@ -254,7 +259,7 @@ void loop() {
   lcd.print("DANG XAC THUC");
 
 
-String result = readPiCommand(35000);
+String result = readPiCommand(90000);
 
 if (result == "RESULT,REGISTERED") {
   // Chế độ đăng ký RFID: không mở barrier.
