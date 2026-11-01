@@ -259,7 +259,7 @@ void loop() {
   lcd.print("DANG XAC THUC");
 
 
-String result = readPiCommand(90000);
+String result = readPiCommand(330000);
 
 if (result == "RESULT,REGISTERED") {
   // Chế độ đăng ký RFID: không mở barrier.
@@ -280,7 +280,7 @@ if (result == "RESULT,REGISTERED") {
   lcd.print("CHO KHUON MAT");
 
   // Đọc kết quả thứ hai từ Raspberry Pi.
-  result = readPiCommand(35000);
+  result = readPiCommand(180000);
   Serial.printf("[PI RESULT 2] '%s' at %lu ms\n",
               result.c_str(), millis());
 
